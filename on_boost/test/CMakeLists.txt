@@ -9,3 +9,6 @@ target_link_libraries(TestAnyOut
     PRIVATE OnBoost
 )
 
+add_executable(TestVariant1
+    test_variant1.cpp
+)
