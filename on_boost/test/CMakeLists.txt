@@ -12,3 +12,7 @@ target_link_libraries(TestAnyOut
 add_executable(TestVariant1
     test_variant1.cpp
 )
+
+add_executable(TestTuple
+    test_tuple.cpp
+)
