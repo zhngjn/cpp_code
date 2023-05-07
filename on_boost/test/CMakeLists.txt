@@ -16,3 +16,7 @@ add_executable(TestVariant1
 add_executable(TestTuple
     test_tuple.cpp
 )
+
+add_executable(TestBind
+    test_bind.cpp
+)
