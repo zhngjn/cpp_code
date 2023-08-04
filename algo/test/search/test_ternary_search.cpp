@@ -6,10 +6,7 @@
 
 using namespace algo::search;
 
-<<<<<<< HEAD
 // --------------------------------- test ternary search: iterative version
-=======
->>>>>>> add ternary search
 TEST(ternarySearch, vector0)
 {
     std::vector<int> vec{};
