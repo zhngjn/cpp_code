@@ -33,3 +33,8 @@ target_link_libraries(test_search
     search
     ${GTEST_LIBS}
 )
+
+add_custom_target(unittests
+COMMAND test_logic
+COMMAND test_search
+)
