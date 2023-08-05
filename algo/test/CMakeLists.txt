@@ -31,6 +31,7 @@ add_executable(test_search
 
 target_link_libraries(test_search 
     search
+    util
     ${GTEST_LIBS}
 )
 

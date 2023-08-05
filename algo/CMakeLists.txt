@@ -14,4 +14,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall")
 
 add_subdirectory(src/logic)
 add_subdirectory(src/search)
+add_subdirectory(src/util)
 add_subdirectory(test)

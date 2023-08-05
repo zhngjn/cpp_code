@@ -11,4 +11,10 @@ add_library(search SHARED
 target_include_directories(search
 PUBLIC
     ${PROJECT_SOURCE_DIR}/include/search
+    ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(search
+PUBLIC
+    util
 )
