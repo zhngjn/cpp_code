@@ -35,7 +35,21 @@ target_link_libraries(test_search
     ${GTEST_LIBS}
 )
 
+file(GLOB TEST_UNION_SRCS 
+    ${CMAKE_CURRENT_SOURCE_DIR}/union/*.cpp
+)
+
+add_executable(test_union
+    ${TEST_UNION_SRCS}
+)
+
+target_link_libraries(test_union
+    union
+    ${GTEST_LIBS}
+)
+
 add_custom_target(unittests
 COMMAND test_logic
 COMMAND test_search
+COMMAND test_union
 )
