@@ -1,18 +1,20 @@
-#ifndef UNION_UNION_H_
-#define UNION_UNION_H_
+#ifndef UNION_WEIGHTED_UNION_H_
+#define UNION_WEIGHTED_UNION_H_
 
 #include <vector>
 #include <climits>
 #include <unordered_map>
 #include <algorithm>
 
+#include "boost/optional.hpp"
+
 namespace algo
 {
 namespace disjoint_set
 {
 
-template <typename T>
-class DisjointSet
+template <typename T, typename Weight>
+class WeightedDisjointSet
 {
 public:
     using SetID = std::size_t;
@@ -22,41 +24,37 @@ private:
     struct Node {
         SetID set_id_{INVALID_SETID};
         std::size_t id_{INVALID_INDEX};
-        std::size_t count_{0};
+        Weight weight_{};
     };
 
     static constexpr std::size_t INVALID_INDEX = std::numeric_limits<std::size_t>::max();
 
 public:
-    DisjointSet() = default;
-    DisjointSet(const std::vector<T>& data)
+    WeightedDisjointSet() = default;
+    WeightedDisjointSet(const std::vector<T>& data, Weight default_weight = Weight{})
         : data_(data)
     {
         for (std::size_t i = 0; i < data_.size(); i++) {
-            nodes_.insert(std::make_pair(i, Node{INVALID_SETID, i, 1}));
+            nodes_.insert(std::make_pair(i, Node{INVALID_SETID, i, default_weight}));
         }
     }
 
-    bool merge(const T& p, const T& q) 
+    /** 
+     * @brief merge q to p with weight w(q->p)
+     */
+    bool merge(const T& p, const T& q, Weight w) 
     {
         std::size_t pi = findIndex(p);
         std::size_t qi = findIndex(q);
         if (pi == INVALID_INDEX || qi == INVALID_INDEX)
             return false;
 
-        if (pi == qi) 
-            return true;
+        if (pi == qi)
+            return w == Weight{};
 
-        while (nodes_[pi].id_ != pi) pi = nodes_[pi].id_;
-        while (nodes_[qi].id_ != qi) qi = nodes_[qi].id_;
-        if (nodes_[pi].count_ < nodes_[qi].count_) {
-            nodes_[pi].id_ = qi;
-            nodes_[qi].count_ += nodes_[pi].count_;
-        }
-        else {
-            nodes_[qi].id_ = pi;
-            nodes_[pi].count_ += nodes_[qi].count_;
-        }
+        nodes_[qi].id_ = pi;
+        nodes_[qi].weight_ = w;
+
         return true;
     }
 
@@ -78,19 +76,9 @@ public:
             return nodes_[pi].set_id_;
 
         // *** compress path
-        std::size_t root = pi;
-        while (nodes_[root].id_ != root) 
-            root = nodes_[root].id_;
-        SetID set_id = nodes_[root].set_id_;
-        std::size_t i = pi, j;
-        while (i != root) {
-            j = nodes_[i].id_;
-            nodes_[i].id_ = root;
-            nodes_[i].set_id_ = set_id;
-            i = j;
-        }
+        compressPath(pi);
 
-        return set_id;
+        return nodes_[pi].set_id_;
     }
 
     bool isJoint(const T& p, const T& q) 
@@ -98,6 +86,32 @@ public:
         SetID ps = getSetID(p);
         SetID qs = getSetID(q);
         return ps != INVALID_SETID && qs != INVALID_SETID && ps == qs;
+    }
+
+    /** 
+     * @brief get weight of q->p
+     */
+    boost::optional<Weight> getWeightBetween(const T& p, const T& q)
+    {
+        std::size_t pi = findIndex(p);
+        std::size_t qi = findIndex(q);
+        if (pi == INVALID_INDEX || qi == INVALID_INDEX)
+            return boost::none;
+
+        if (pi == qi)
+            return Weight{};
+
+        // *** compress path
+        if (nodes_[pi].set_id_ == INVALID_SETID)
+            compressPath(pi);
+        if (nodes_[qi].set_id_ == INVALID_SETID)
+            compressPath(qi);
+
+        // not in the same set
+        if (nodes_[pi].set_id_ != nodes_[qi].set_id_)
+            return boost::none;
+        
+        return nodes_[qi].weight_ - nodes_[pi].weight_;
     }
 
     std::size_t getSetCount() const 
@@ -129,6 +143,17 @@ private:
         return INVALID_INDEX;
     }
 
+    std::size_t compressPath(std::size_t pi)
+    {
+        if (nodes_[pi].id_ != pi) {
+            std::size_t ppi = nodes_[pi].id_;
+            nodes_[pi].id_ = compressPath(ppi);
+            nodes_[pi].set_id_ = nodes_[nodes_[pi].id_].set_id_;
+            nodes_[pi].weight_ += nodes_[ppi].weight_;
+        }
+        return nodes_[pi].id_;
+    }
+
 private:
     std::vector<T> data_;
     std::unordered_map<std::size_t, Node> nodes_; 
@@ -138,4 +163,4 @@ private:
 } // namespace disjoint_set
 } // namespace algo
 
-#endif // UNION_UNION_H_
+#endif // UNION_WEIGHTED_UNION_H_

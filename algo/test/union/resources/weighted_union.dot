@@ -1,0 +1,20 @@
+digraph {
+    rankdir = "BT"
+    7 -> 1 [label=2]
+    12 -> 3 [label=8]
+    17 -> 6 [label=1]
+    11 -> 10 [label=3]
+    5 -> 2 [label=4]
+    19 -> 13 [label=9]
+    14 -> 9 [label=5]
+    18 -> 11 [label=6]
+    16 -> 15 [label=7]
+    3 -> 1 [label=5]
+    15 -> 3 [label=2]
+    20 -> 6 [label=3]
+    10 -> 20 [label=1]
+    13 -> 2 [label=4]
+    9 -> 2 [label=3]
+    4
+    8
+}
