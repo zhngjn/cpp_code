@@ -16,6 +16,12 @@ struct RandomIntGenerator
         : generator_(seed)
     {}
 
+    IntType genRandomInt(IntType min, IntType max)
+    {
+        std::uniform_int_distribution<IntType> distribution(min, max);
+        return distribution(generator_);
+    }
+
     std::vector<IntType> genRandomInts(IntType min, IntType max, std::size_t num)
     {
         std::vector<IntType> vec(num);
